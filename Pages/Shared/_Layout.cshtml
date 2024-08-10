@@ -1,0 +1,66 @@
+﻿@using Microsoft.AspNetCore.Http;
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var path = HttpContextAccessor.HttpContext!.Request.Path.Value;
+    var isIndexPage = path == "/" || path!.Equals("/Index", StringComparison.OrdinalIgnoreCase) || path!.Equals("/MyFiles", StringComparison.OrdinalIgnoreCase) || path!.Equals("/Shared", StringComparison.OrdinalIgnoreCase);
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - metalduck</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/metalduck.styles.css" asp-append-version="true" />
+</head>
+
+<body class="@(isIndexPage ? "bg-slate-100" : "")">
+    <header class="h-16">
+        <nav class="grid grid-cols-12 p-2">
+            <a class="text-primary font-bold text-lg col-span-6" asp-page="/Index">metalduck</a>
+            <div class="flex col-span-6 gap-4 justify-end">
+                <partial name="_LoginPartial" />
+            </div>
+        </nav>
+    </header>
+
+    <div>
+        <main role="main">
+            @RenderBody()
+        </main>
+
+        <footer class="absolute bottom-0 h-12 px-4 text-black/50">
+            <div class="flex items-center justify-between">
+                <div>
+                    &copy; 2024 - metalduck - <a asp-area="" asp-page="/Privacy">Privacy</a>
+                </div>
+
+                <div class="ml-10">
+                    Ashish - Federico - Gabriel - Shen
+                </div>
+            </div>
+        </footer>
+
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @*<script src="~/js/tailwind_3.4.5.min.js"></script>*@
+        <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
+        <script>tailwind.config = {
+                theme: {
+                    extend: {
+                        colors: {
+                            text: '#0d1410',
+                            background: '#f3f7f5',
+                            primary: '#66a07f',
+                            secondary: '#a8bbc9',
+                            accent: '#8b93b7',
+                        }
+                    }
+                }
+            }</script>
+
+        @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

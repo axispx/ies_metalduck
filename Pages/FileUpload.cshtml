@@ -1,0 +1,47 @@
+﻿@page "/upload"
+@model FileUploadModel
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="flex flex-col items-center justify-center mt-24">
+        <div class="w-1/2 grid grid-cols-1 space-y-2">
+            <label class="text-sm font-bold text-gray-500 tracking-wide">Attach Document</label>
+            <div class="flex flex-col items-center justify-center rounded-lg border-4 border-dashed w-full p-10">
+                    <img src="~/image-upload.png" alt="file upload" class="h-40"/>
+                <div class="text-center">
+                    <p class="pointer-none text-gray-500">Drag and drop files here <br /> or <label class="text-primary hover:underline cursor-pointer" for="fileUpload" id="file-upload">select a file</label> from your computer</p>
+                </div>
+            </div>
+            <input type="file" name="files" id="fileUpload" hidden multiple/>
+        </div>
+
+        <button type="submit" class="my-8 w-60 flex justify-center bg-primary text-gray-100 px-4 py-3 rounded-full tracking-wide font-semibold focus:outline-none focus:shadow-outline hover:bg-primary/90 shadow-lg cursor-pointer transition ease-in duration-100">
+            Upload
+        </button>
+
+        <div id="filePreview" class="w-1/2">
+
+        </div>
+    </div>
+</form>
+
+<script>
+    document.querySelector("#fileUpload").addEventListener('change', function (event) {
+        const files = event.target.files;
+        const preview = document.querySelector("#filePreview");
+        preview.innerHTML = ``;
+
+        for (let i = 0; i < files.length; i++) {
+            if (files[i]) {
+                preview.innerHTML += `
+                    <div class="w-full flex items-center gap-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="rgba(102,160,127,1)"><path d="M9 2.00318V2H19.9978C20.5513 2 21 2.45531 21 2.9918V21.0082C21 21.556 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5501 3 20.9932V8L9 2.00318ZM5.82918 8H9V4.83086L5.82918 8ZM11 4V9C11 9.55228 10.5523 10 10 10H5V20H19V4H11Z"></path></svg>
+                        <p>${files[i].name}</p>
+                    </div>
+                `;
+            }
+        }
+    });
+</script>

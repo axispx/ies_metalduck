@@ -1,0 +1,66 @@
+﻿<div class="mt-8">
+    <table class="w-full">
+        <thead>
+            <tr class="font-medium text-xs text-slate-600">
+                <th></th>
+                <th class="pb-3 text-start">NAME</th>
+                <th class="pb-3 text-start">OWNER</th>
+                @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                {
+                    <th class="pb-3 text-start">STATUS</th>
+                }
+                <th class="pb-3 text-start">CREATED ON</th>
+                <th class="pb-3 text-start">DETAILS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Documents != null && Model.Documents.Any())
+            {
+                @foreach (var document in Model.Documents)
+                {
+                    <tr class="border-b last:border-b-0">
+                        <td class="py-3"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="rgba(102,160,127,1)"><path d="M9 2.00318V2H19.9978C20.5513 2 21 2.45531 21 2.9918V21.0082C21 21.556 20.5551 22 20.0066 22H3.9934C3.44476 22 3 21.5501 3 20.9932V8L9 2.00318ZM5.82918 8H9V4.83086L5.82918 8ZM11 4V9C11 9.55228 10.5523 10 10 10H5V20H19V4H11Z"></path></svg></td>
+                        <td class="py-3">
+                            <a href="~/uploads/@document.FileName" rel="nofollow">@document.FileName</a>
+                        </td>
+                        <td class="py-3">@document.Owner?.UserName</td>
+                        @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+                        {
+                            <td class="py-3 pr-4">
+                                @if (document.Status == DocumentStatus.Approved)
+                                {
+                                    <div class="border p-[2px] text-sm bg-green-500 text-white rounded-full text-center">
+                                        @document.Status
+                                    </div>
+                                }
+                                else if (document.Status == DocumentStatus.Rejected)
+                                {
+                                    <div class="border p-[2px] text-sm bg-red-500 text-white rounded-full text-center">
+                                        @document.Status
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="border p-[2px] text-sm bg-yellow-500 text-white rounded-full text-center">
+                                        @document.Status
+                                    </div>
+                                }
+                            </td>
+                        }
+                        <td class="py-3">@document.DateCreated</td>
+                        <td class="py-3">
+                            <a asp-page="./Document" asp-route-id="@(document.Id)" class="text-blue-500 text-sm">Details</a>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3">No documents found.</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,74 @@
+﻿@page "/document"
+@model metalduck.Pages.DocumentModel
+@{
+    ViewData["Title"] = "Document";
+}
+
+<div class="mx-4">
+    <div class="flex justify-between">
+        <div>
+            <p><span class="font-bold">Name:</span> @Model.Document.FileName</p>
+            <p><span class="font-bold">Status:</span> @Model.Document.Status</p>
+        </div>
+
+        <a rel="nofollow" target="_blank" class="text-blue-500 underline" href="/uploads/@(Model.Document.FileName)">Download</a>
+    </div>
+
+    @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
+    {
+        <form asp-page-handler="Approve" method="post">
+            <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
+            <button type="submit" class="text-green-500">Approve</button>
+        </form>
+
+        <form asp-page-handler="Reject" method="post">
+            <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
+            <button type="submit" class="text-yellow-500">Reject</button>
+        </form>
+    }
+    @if (User.IsInRole("Admin") || (Model.CurrentUserId == Model.Document.Owner.Id))
+    {
+        <form asp-page-handler="Delete" method="post">
+            <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
+            <button type="submit" class="text-red-500">Delete</button>
+        </form>
+    }
+
+    @if ((User.IsInRole("Admin") || User.IsInRole("Manager") || (Model.CurrentUserId == Model.Document.Owner.Id)) && Model.Document.Status == DocumentStatus.Approved)
+    {
+        <div class="mt-8">Share Document</div>
+
+        <form asp-page-handler="Share" method="post">
+            <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
+
+            <select id="dropdown_users" asp-for="AddSharedUser">
+                <option value="">Select User</option>
+                @foreach (var user in Model.Users)
+                {
+                    @if (!Model.UserDocuments.Any(ud => ud.UserId == user.Id))
+                    {
+                        <option value="@(user.Id)">@(user.UserName)</option>
+                    }
+                }
+            </select>
+
+            <button type="submit">Add user</button>
+        </form>
+
+        <div id="select_users">
+            @foreach (var user in Model.UserDocuments)
+            {
+                    <form asp-page-handler="RemoveShare" method="post">
+                        <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
+                        <input type="text" asp-for="RemoveSharedUser" value="@(user.User.Id)" hidden />
+
+                        <div class="flex gap-2">
+                            <p>@user.User.UserName</p>
+                            <button type="submit" class="text-red-500">Remove</button>
+                        </div>
+                    </form>
+
+            }
+        </div>
+    }
+</div>
