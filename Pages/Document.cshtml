@@ -11,7 +11,8 @@
             <p><span class="font-bold">Status:</span> @Model.Document.Status</p>
         </div>
 
-        <a rel="nofollow" target="_blank" class="text-blue-500 underline" href="/uploads/@(Model.Document.FileName)">Download</a>
+        <a rel="nofollow" target="_blank" class="text-blue-500 underline"
+            href="/uploads/@(Model.Document.FileName)">Download</a>
     </div>
 
     @if (User.IsInRole("Admin") || User.IsInRole("Manager"))
@@ -34,41 +35,59 @@
         </form>
     }
 
-    @if ((User.IsInRole("Admin") || User.IsInRole("Manager") || (Model.CurrentUserId == Model.Document.Owner.Id)) && Model.Document.Status == DocumentStatus.Approved)
+    @if ((User.IsInRole("Admin") || User.IsInRole("Manager") || (Model.CurrentUserId == Model.Document.Owner.Id)) &&
+    Model.Document.Status == DocumentStatus.Approved)
     {
         <div class="mt-8">Share Document</div>
 
         <form asp-page-handler="Share" method="post">
             <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
 
-            <select id="dropdown_users" asp-for="AddSharedUser">
-                <option value="">Select User</option>
-                @foreach (var user in Model.Users)
-                {
-                    @if (!Model.UserDocuments.Any(ud => ud.UserId == user.Id))
+            <div class="flex gap-2 items-center">
+                <select id="dropdown_users" asp-for="AddSharedUser">
+                    <option value="">Select User</option>
+                    @foreach (var user in Model.Users)
                     {
-                        <option value="@(user.Id)">@(user.UserName)</option>
+                        @if (!Model.UserDocuments.Any(ud => ud.UserId == user.Id))
+                        {
+                            <option value="@(user.Id)">@(user.UserName)</option>
+                        }
                     }
-                }
-            </select>
+                </select>
 
-            <button type="submit">Add user</button>
+                <button type="submit" class="bg-primary text-white text-sm rounded px-4 py-3">Add user</button>
+            </div>
         </form>
 
         <div id="select_users">
-            @foreach (var user in Model.UserDocuments)
-            {
-                    <form asp-page-handler="RemoveShare" method="post">
-                        <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
-                        <input type="text" asp-for="RemoveSharedUser" value="@(user.User.Id)" hidden />
+            <table class="w-full mt-8">
+                <thead>
+                    <tr class="font-medium text-xs text-slate-600">
+                        <th class="pb-3 text-start">NAME</th>
+                        <th class="pb-3 text-start">REMOVE</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model.UserDocuments)
+                    {
+                        <tr class="odd:bg-primary/20">
+                            <td class="p-3 rounded">
+                                <p>@user.User.UserName</p>
+                            </td>
+                            <td>
+                                <form asp-page-handler="RemoveShare" method="post">
+                                    <input type="text" asp-for="Id" value="@(Model.Document.Id)" hidden />
+                                    <input type="text" asp-for="RemoveSharedUser" value="@(user.User.Id)" hidden />
 
-                        <div class="flex gap-2">
-                            <p>@user.User.UserName</p>
-                            <button type="submit" class="text-red-500">Remove</button>
-                        </div>
-                    </form>
-
-            }
+                                    <div class="flex gap-2">
+                                        <button type="submit" class="text-red-500">Remove</button>
+                                    </div>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     }
 </div>
